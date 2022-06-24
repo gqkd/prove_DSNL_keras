@@ -75,7 +75,7 @@ def main():
         os.makedirs(args.output_dir)
 
     # Select channel
-    select_ch = args.select_ch
+    select_ch = args.select_ch #diff, ["EEG Fpz-Cz", "EEG Pz-Oz"]
 
     # Read raw and annotation EDF files
     psg_fnames = glob.glob(os.path.join(args.data_dir, "*PSG.edf"))
@@ -86,17 +86,15 @@ def main():
     ann_fnames = np.asarray(ann_fnames)
 
     for i in range(len(psg_fnames)):
-        # if not "ST7171J0-PSG.edf" in psg_fnames[i]:
-        #     continue
 
         raw = read_raw_edf(psg_fnames[i], preload=True, stim_channel=None)
         sampling_rate = raw.info['sfreq']
-        raw_ch_df = raw.to_data_frame(scalings=100.0)[select_ch]
+        raw_ch_df = raw.to_data_frame(scalings=100.0)[select_ch] #diff, scaling time
         raw_ch_df = raw_ch_df.to_frame()
         raw_ch_df.set_index(np.arange(len(raw_ch_df)))
 
         # Get raw header
-        f = open(psg_fnames[i], 'r', encoding='iso-8859-1')
+        f = open(psg_fnames[i], 'r', encoding='iso-8859-1') #diff, no encoding and errors='replace'
         reader_raw = dhedfreader.BaseEDFReader(f)
         reader_raw.read_header()
         h_raw = reader_raw.header
@@ -104,7 +102,7 @@ def main():
         raw_start_dt = datetime.strptime(h_raw['date_time'], "%Y-%m-%d %H:%M:%S")
 
         # Read annotation and its header
-        f = open(ann_fnames[i], 'r', encoding='iso-8859-1')
+        f = open(ann_fnames[i], 'r', encoding='iso-8859-1') #diff, no encoding
         reader_ann = dhedfreader.BaseEDFReader(f)
         reader_ann.read_header()
         h_ann = reader_ann.header
