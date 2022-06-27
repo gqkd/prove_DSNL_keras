@@ -16,7 +16,7 @@ class Loader:
     X_seq_test = None
     y_seq_test = None
 
-    def load_pretrain(self, fold=0):
+    def load_train(self, fold=0):
         path = './20_fold_data'
         npz = np.load(join(path,str(fold)+'.npz'))
         self.X_train = npz['X_train']
@@ -38,5 +38,5 @@ class Loader:
 
 if __name__ == '__main__':
     d = Loader()
-    d.load_pretrain()
+    d.load_train()
     print(d.X_train.shape)
