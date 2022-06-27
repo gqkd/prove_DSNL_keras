@@ -4,12 +4,15 @@ import math
 import ntpath
 import os
 import shutil
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 
 from datetime import datetime
 
 import numpy as np
 
-from mne.io import read_raw_edf
+from mne import Epochs, pick_types, find_events
+from mne.io import concatenate_raws, read_raw_edf
 
 import dhedfreader
 
@@ -52,7 +55,6 @@ ann2label = {
 
 EPOCH_SEC_SIZE = 30
 
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_dir", type=str, default="/data/physionet_sleep",
@@ -71,7 +73,7 @@ def main():
         os.makedirs(args.output_dir)
 
     # Select channel
-    select_ch = ["EEG Fpz-Cz", "EEG Pz-Oz"]
+    select_ch = args.select_ch #diff, ["EEG Fpz-Cz", "EEG Pz-Oz"]
 
     # Read raw and annotation EDF files
     psg_fnames = glob.glob(os.path.join(args.data_dir, "*PSG.edf"))
@@ -85,11 +87,12 @@ def main():
 
         raw = read_raw_edf(psg_fnames[i], preload=True, stim_channel=None)
         sampling_rate = raw.info['sfreq']
-        raw_ch_df = raw.to_data_frame(scaling_time=100.0)[select_ch]  ##MODIFIED scale_time new in version 0.15
+        raw_ch_df = raw.to_data_frame(scalings=100.0)[select_ch] #diff, scaling time
+        raw_ch_df = raw_ch_df.to_frame()
         raw_ch_df.set_index(np.arange(len(raw_ch_df)))
 
         # Get raw header
-        f = open(psg_fnames[i], 'r', errors='replace')
+        f = open(psg_fnames[i], 'r', encoding='iso-8859-1') #diff, no encoding and errors='replace'
         reader_raw = dhedfreader.BaseEDFReader(f)
         reader_raw.read_header()
         h_raw = reader_raw.header
@@ -97,7 +100,7 @@ def main():
         raw_start_dt = datetime.strptime(h_raw['date_time'], "%Y-%m-%d %H:%M:%S")
 
         # Read annotation and its header
-        f = open(ann_fnames[i], 'r')
+        f = open(ann_fnames[i], 'r', encoding='iso-8859-1') #diff, no encoding
         reader_ann = dhedfreader.BaseEDFReader(f)
         reader_ann.read_header()
         h_ann = reader_ann.header
@@ -109,8 +112,8 @@ def main():
         assert raw_start_dt == ann_start_dt
 
         # Generate label and remove indices
-        remove_idx = []  # indicies of the data that will be removed
-        labels = []  # indicies of the data that have labels
+        remove_idx = []    # indicies of the data that will be removed
+        labels = []        # indicies of the data that have labels
         label_idx = []
         for a in ann[0]:
             onset_sec, duration_sec, ann_char = a
@@ -151,6 +154,8 @@ def main():
         select_idx = np.intersect1d(select_idx, label_idx)
         print("after intersect label: {}".format(select_idx.shape))
 
+#here big difference, between original and deepsleepnet lite
+
         # Remove extra index
         if len(label_idx) > len(select_idx):
             print("before remove extra labels: {}, {}".format(select_idx.shape, labels.shape))
@@ -168,7 +173,6 @@ def main():
                     labels = labels[:-n_label_trims]
             print("after remove extra labels: {}, {}".format(select_idx.shape, labels.shape))
 
-        # Remove movement and unknown stages if any
         raw_ch = raw_ch_df.values[select_idx]
 
         # Verify that we can split into 30-s epochs
@@ -212,4 +216,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
