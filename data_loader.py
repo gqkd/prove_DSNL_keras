@@ -17,7 +17,7 @@ class Loader:
     y_seq_test = None
 
     def load_train(self, fold=0):
-        path = './20_fold_data'
+        path = './download_dataset/data/eef_fpz_cz'
         npz = np.load(join(path,str(fold)+'.npz'))
         self.X_train = npz['X_train']
         self.y_train = npz['y_train']
