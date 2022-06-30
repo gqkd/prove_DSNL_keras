@@ -1,8 +1,8 @@
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Conv1D, Dense, Dropout, MaxPool1D, Activation
-from tensorflow.keras.layers import Reshape, BatchNormalization
+from keras.models import Model
+from keras.layers import Input, Conv1D, Dense, Dropout, MaxPool1D, Activation
+from keras.layers import Reshape, BatchNormalization
 
 
 
@@ -20,7 +20,8 @@ def net():
   cnn0 = Conv1D(
     kernel_size=50,
     filters=64,
-    strides=6,kernel_regularizer=keras.regularizers.l2(0.001)) 
+    strides=6,
+    kernel_regularizer=keras.regularizers.l2(0.001)) 
   s = cnn0(input_signal)
   s = BatchNormalization()(s) 
   s = Activation(activation=activation)(s)
@@ -96,11 +97,11 @@ def net():
   merged = Dropout(0.5)(merged) 
   merged = Dense(5,name='merged')(merged)
 
-  pre_softmax = Activation(activation='softmax')(merged)
+  softmax = Activation(activation='softmax')(merged)
 
-  pre_model = Model(input_signal,pre_softmax)
-  pre_opt = keras.optimizers.Adam(lr=1e-4)
-  pre_model.compile(optimizer=pre_opt,loss='categorical_crossentropy',metrics=['acc'])
+  model = Model(input_signal,softmax)
 
-if __name__ == '__main__':
-  model = net()
+  return model
+
+# if __name__ == '__main__':
+#   model = net()
