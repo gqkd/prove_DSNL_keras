@@ -9,14 +9,16 @@ import pandas as pd
 from sklearn.model_selection import KFold, StratifiedKFold
 import tensorflow as tf
 from sklearn.preprocessing import OneHotEncoder
+from sklearn.model_selection import train_test_split
 
 def data_loader(data_dir = "download_dataset/data"):
     data_directory = data_dir
     
+
     electrod_directory1 = "/eeg_fpz_cz"
     mypath1 = data_directory+electrod_directory1
     file_list1 = [f for f in listdir(mypath1) if isfile(join(mypath1, f))]
-    
+
     # electrod_directory2 = "/eeg_pz_oz"
     # mypath2 = data_directory+electrod_directory2
     # file_list2 = [f for f in listdir(mypath2) if isfile(join(mypath2, f))]
@@ -28,7 +30,7 @@ def data_loader(data_dir = "download_dataset/data"):
             data_X.append(npz['x'])
             data_y.append(npz['y'])
 
-    
+
     # temp_y = []
     # for i in range(len(data_y)):
     #     for j in range(len(data_y[i])):
@@ -61,31 +63,35 @@ def data_loader(data_dir = "download_dataset/data"):
         temp = np.zeros((5,))
         temp[y_seq_central[i]] = 1.
         temp_.append(temp)
-    y_seq_central_ohe = temp_
+    y_seq_central_ohe = np.asarray(temp_)
 
-    #how X and y are organized
-    # X is a matrix in which each row is a sequence of 3 epochs
-    # each epochs is 3000 samples
-    # ___________________________
-    #| epoch1 + epoch2 + epoch3  |
-    #| epoch4 + epoch5 + epoch6  |
-    #| ...
-    #
-    # if the number of epochs per patient is not divisible for 3
-    # last epochs are deleted
-    # y is a matrix with the class of the epochs
-    # __________________________________
-    #| [y_epoch1 , y_epoch2 , y_epoch3] |
-    #| [y_epoch4 , y_epoch5 , y_epoch6] |
-    #| ...
-    #
-    # we will pass the sequence to the net but we need only the class
-    # for the central one
+        #split train valid
+    X_train, X_valid = train_test_split(X_seq, test_size=0.2, random_state=42)
+    y_train, y_valid = train_test_split(y_seq_central_ohe, test_size=0.2, random_state=42)
 
-    #split train valid
-    X_train = X_seq[:12000]
-    X_valid = X_seq[12000:]
-    y_train = y_seq_central_ohe[:12000]
-    y_valid = y_seq_central_ohe[12000:]
+        #how X and y are organized
+        # X is a matrix in which each row is a sequence of 3 epochs
+        # each epochs is 3000 samples
+        # ___________________________
+        #| epoch1 + epoch2 + epoch3  |
+        #| epoch4 + epoch5 + epoch6  |
+        #| ...
+        #
+        # if the number of epochs per patient is not divisible for 3
+        # last epochs are deleted
+        # y is a matrix with the class of the epochs
+        # __________________________________
+        #| [y_epoch1 , y_epoch2 , y_epoch3] |
+        #| [y_epoch4 , y_epoch5 , y_epoch6] |
+        #| ...
+        #
+        # we will pass the sequence to the net but we need only the class
+        # for the central one
+        # _____________
+        #|  y_epoch2  |
+        #|  y_epoch5  |
+        #| ...
+
 
     return X_train, X_valid, y_train, y_valid
+

@@ -2,12 +2,14 @@
 from model_cnn import net
 # from data_prep import data_loader
 import tensorflow as tf
-# import keras
+import shutil, os
 import datetime
 
 
 def trainer(X_train, X_valid, y_train, y_valid, 
             epochs=10, batch=32, log_dir="/logs/base_fit/" ):
+
+
     model = net()
     opt = tf.keras.optimizers.Adam(learning_rate=1e-4)
     model.compile(optimizer=opt,
@@ -36,3 +38,5 @@ def trainer(X_train, X_valid, y_train, y_valid,
     model.save( log_dir +'models/'+ datetime.datetime.now().strftime("%Y_%m_%d-%H%M"))
 
     return history
+
+
