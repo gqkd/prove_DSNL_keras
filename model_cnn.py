@@ -12,7 +12,7 @@ def net():
   padding = 'same'
 
   ######### Input ########
-  input_signal = Input(shape=(3*30*100,1), name='input_signal')
+  input_signal = Input(shape=(9000), name='input_signal')
   # print("input_signal:",input_signal.shape)
 
   ######### CNNs with small filter size at the first layer #########

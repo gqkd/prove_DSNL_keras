@@ -68,7 +68,7 @@ def data_loader(data_dir = "download_dataset/data"):
         #split train valid
     X_train, X_valid = train_test_split(X_seq, test_size=0.2, random_state=42)
     y_train, y_valid = train_test_split(y_seq_central_ohe, test_size=0.2, random_state=42)
-
+    
         #how X and y are organized
         # X is a matrix in which each row is a sequence of 3 epochs
         # each epochs is 3000 samples
