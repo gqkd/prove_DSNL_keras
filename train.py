@@ -40,3 +40,9 @@ def trainer(X_train, X_valid, y_train, y_valid,
     return history
 
 
+#%%
+from data_prep import data_loader
+X_train, X_valid, y_train, y_valid = data_loader()
+#%%
+history = trainer(X_train, X_valid, y_train, y_valid)
+# %%
