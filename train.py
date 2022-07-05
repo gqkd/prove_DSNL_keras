@@ -1,4 +1,3 @@
-#%%
 from model_cnn import net
 # from data_prep import data_loader
 import tensorflow as tf
@@ -14,7 +13,10 @@ def trainer(X_train, X_valid, y_train, y_valid,
     opt = tf.keras.optimizers.Adam(learning_rate=1e-4)
     model.compile(optimizer=opt,
                     loss='categorical_crossentropy',
-                    metrics=['acc'])
+                    metrics=['accuracy',
+                            'AUC',
+                           'Precision',
+                           'Recall'])
 
     # keras.utils.plot_model(model, show_shapes=True)
 
@@ -39,10 +41,3 @@ def trainer(X_train, X_valid, y_train, y_valid,
 
     return history
 
-
-#%%
-from data_prep import data_loader
-X_train, X_valid, y_train, y_valid = data_loader()
-#%%
-history = trainer(X_train, X_valid, y_train, y_valid)
-# %%
