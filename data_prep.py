@@ -30,7 +30,6 @@ def data_loader(data_dir = "download_dataset/data"):
             data_X.append(npz['x'])
             data_y.append(npz['y'])
 
-
     # temp_y = []
     # for i in range(len(data_y)):
     #     for j in range(len(data_y[i])):
@@ -48,8 +47,16 @@ def data_loader(data_dir = "download_dataset/data"):
 
     X_seq, y_seq = [], []
 
+    #in this way is like [ep1,ep2,ep3],[ep4,ep5,ep6], ...
+    # for i in range(len(data_X)):
+    #     for j in range(0, len(data_X[i]), seq_length): # discard last short sequence
+    #         if j+seq_length < len(data_X[i]):
+    #             X_seq.append(np.concatenate(data_X[i][j:j+seq_length]))
+    #             y_seq.append(list(np.array(data_y[i][j:j+seq_length])))
+
+    #in this way is like [ep1,ep2,ep3],[ep2,ep3,ep4], ...
     for i in range(len(data_X)):
-        for j in range(0, len(data_X[i]), seq_length): # discard last short sequence
+        for j in range(len(data_X[i])): # discard last short sequence
             if j+seq_length < len(data_X[i]):
                 X_seq.append(np.concatenate(data_X[i][j:j+seq_length]))
                 y_seq.append(list(np.array(data_y[i][j:j+seq_length])))
@@ -65,7 +72,7 @@ def data_loader(data_dir = "download_dataset/data"):
         temp_.append(temp)
     y_seq_central_ohe = np.asarray(temp_)
 
-        #split train valid
+    #split train valid
     X_train, X_valid = train_test_split(X_seq, test_size=0.2, random_state=42)
     y_train, y_valid = train_test_split(y_seq_central_ohe, test_size=0.2, random_state=42)
     
@@ -74,7 +81,7 @@ def data_loader(data_dir = "download_dataset/data"):
         # each epochs is 3000 samples
         # ___________________________
         #| epoch1 + epoch2 + epoch3  |
-        #| epoch4 + epoch5 + epoch6  |
+        #| epoch2 + epoch3 + epoch4  |
         #| ...
         #
         # if the number of epochs per patient is not divisible for 3
@@ -89,7 +96,8 @@ def data_loader(data_dir = "download_dataset/data"):
         # for the central one
         # _____________
         #|  y_epoch2  |
-        #|  y_epoch5  |
+        #|  y_epoch3  |
+        #|  y_epoch4  |
         #| ...
 
 
