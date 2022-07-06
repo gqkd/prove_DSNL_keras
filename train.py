@@ -30,12 +30,18 @@ def trainer(X_train, X_valid, y_train, y_valid,
                                                 embeddings_layer_names=None,
                                                 embeddings_metadata=None)
 
+    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss',
+                                                  min_delta=0.0001, 
+                                                  patience=5,
+                                                  verbose=1,
+                                                  mode='min')    
+
     history = model.fit(X_train, y_train,
                 epochs=epochs,
                 batch_size=batch,
                 verbose=1,
                 validation_data=(X_valid,y_valid),
-                callbacks=[tensorboard])
+                callbacks=[tensorboard,early_stopping])
     
     model.save( log_dir +'models/'+ datetime.datetime.now().strftime("%Y_%m_%d-%H%M"))
 
