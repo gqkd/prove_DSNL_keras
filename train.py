@@ -1,13 +1,12 @@
 from model_cnn import net
-# from data_prep import data_loader
 import tensorflow as tf
 import shutil, os
 import datetime
-
+import tensorflow_addons as tfa
 
 def trainer(X_train, X_valid, y_train, y_valid, 
             epochs=10, batch=32, log_dir="/logs/base_fit/", model = None):
-
+    num_classes = len(y_train[0])
     if model == None: #if not specified is the first training
         model = net()
     opt = tf.keras.optimizers.Adam(learning_rate=1e-4)
@@ -16,7 +15,11 @@ def trainer(X_train, X_valid, y_train, y_valid,
                     metrics=['accuracy',
                             'AUC',
                            'Precision',
-                           'Recall'])
+                           'Recall',
+                           tfa.metrics.F1Score(num_classes=num_classes,average='macro'),
+                           tfa.metrics.CohenKappa(num_classes=num_classes),
+                           tfa.metrics.FBetaScore(num_classes=num_classes,average='macro')
+                           ])
 
     # keras.utils.plot_model(model, show_shapes=True)
 

@@ -71,11 +71,12 @@ def data_loader(data_dir = "download_dataset/data", stratified=False):
 
     
     if stratified:
-        #stratified
+        #stratified + shuffle, difference between folds not guaranted
         sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
         for train_index, valid_index in sss.split(X_seq, y_seq_central_ohe):
             X_train, X_valid = X_seq[train_index], X_seq[valid_index]
             y_train, y_valid = y_seq_central_ohe[train_index], y_seq_central_ohe[valid_index] 
+
     else:
         #split train valid
         X_train, X_valid = train_test_split(X_seq, test_size=0.2, random_state=42)
