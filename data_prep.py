@@ -5,15 +5,14 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn.model_selection import KFold, StratifiedKFold
+from sklearn.model_selection import KFold, StratifiedKFold, StratifiedShuffleSplit
 import tensorflow as tf
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 
-def data_loader(data_dir = "download_dataset/data"):
+def data_loader(data_dir = "download_dataset/data", stratified=False):
     data_directory = data_dir
     
-
     electrod_directory1 = "/eeg_fpz_cz"
     mypath1 = data_directory+electrod_directory1
     file_list1 = [f for f in listdir(mypath1) if isfile(join(mypath1, f))]
@@ -43,7 +42,6 @@ def data_loader(data_dir = "download_dataset/data"):
 
     # make sequence data, must be odd
     seq_length = 3 
-
     X_seq, y_seq = [], []
 
     #in this way is like [ep1,ep2,ep3],[ep4,ep5,ep6], ...
@@ -71,10 +69,18 @@ def data_loader(data_dir = "download_dataset/data"):
         temp_.append(temp)
     y_seq_central_ohe = np.asarray(temp_)
 
-    #split train valid
-    X_train, X_valid = train_test_split(X_seq, test_size=0.2, random_state=42)
-    y_train, y_valid = train_test_split(y_seq_central_ohe, test_size=0.2, random_state=42)
     
+    if stratified:
+        #stratified
+        sss = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+        for train_index, valid_index in sss.split(X_seq, y_seq_central_ohe):
+            X_train, X_valid = X_seq[train_index], X_seq[valid_index]
+            y_train, y_valid = y_seq_central_ohe[train_index], y_seq_central_ohe[valid_index] 
+    else:
+        #split train valid
+        X_train, X_valid = train_test_split(X_seq, test_size=0.2, random_state=42)
+        y_train, y_valid = train_test_split(y_seq_central_ohe, test_size=0.2, random_state=42)
+
         #how X and y are organized
         # X is a matrix in which each row is a sequence of 3 epochs
         # each epochs is 3000 samples
