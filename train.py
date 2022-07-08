@@ -5,11 +5,17 @@ import datetime
 import tensorflow_addons as tfa
 
 def trainer(X_train, X_valid, y_train, y_valid, 
-            epochs=10, batch=32, log_dir="/logs/base_fit/", model = None):
+            epochs=10, 
+            batch=32, 
+            log_dir="/logs/base_fit/", 
+            model = None,
+            lr = 1e-4):
+
     num_classes = len(y_train[0])
+    
     if model == None: #if not specified is the first training
         model = net()
-    opt = tf.keras.optimizers.Adam(learning_rate=1e-4)
+    opt = tf.keras.optimizers.Adam(learning_rate=lr)
     model.compile(optimizer=opt,
                     loss='categorical_crossentropy',
                     metrics=['accuracy',
