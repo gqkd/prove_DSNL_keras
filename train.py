@@ -1,6 +1,5 @@
 from model_cnn import net
 import tensorflow as tf
-import shutil, os
 import datetime
 import tensorflow_addons as tfa
 
@@ -9,7 +8,8 @@ def trainer(X_train, X_valid, y_train, y_valid,
             batch=32, 
             log_dir="/logs/base_fit/", 
             model = None,
-            lr = 1e-4):
+            lr = 1e-4,
+            patiente=5):
 
     num_classes = len(y_train[0])
     
@@ -39,9 +39,9 @@ def trainer(X_train, X_valid, y_train, y_valid,
                                                 embeddings_layer_names=None,
                                                 embeddings_metadata=None)
 
-    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss',
+    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy',
                                                   min_delta=0.0001, 
-                                                  patience=5,
+                                                  patience=patiente,
                                                   verbose=1,
                                                   mode='min')    
 
