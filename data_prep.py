@@ -8,7 +8,8 @@ from sklearn.model_selection import train_test_split
 
 def data_loader(data_dir = "download_dataset/data", 
                 test_size = 0.2,
-                stratified=False):
+                stratified=False,
+                raw=False):
     
     data_directory = data_dir
     
@@ -104,6 +105,8 @@ def data_loader(data_dir = "download_dataset/data",
         #|  y_epoch4  |
         #| ...
 
-
-    return X_train, X_valid, y_train, y_valid
+    if raw:
+        return data_X, data_y
+    else:
+        return X_train, X_valid, y_train, y_valid
 
