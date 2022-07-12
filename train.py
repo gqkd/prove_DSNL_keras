@@ -3,13 +3,14 @@ import tensorflow as tf
 import datetime
 import tensorflow_addons as tfa
 
+
 def trainer(X_train, X_valid, y_train, y_valid, 
             epochs=10, 
             batch=32, 
             log_dir="/logs/base_fit/", 
             model = None,
             lr = 1e-4,
-            patiente=5):
+            patiente=100):
 
     num_classes = len(y_train[0])
     
@@ -45,14 +46,21 @@ def trainer(X_train, X_valid, y_train, y_valid,
                                                   verbose=1,
                                                   mode='min')    
 
+    checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath=log_dir +'models/'+ datetime.datetime.now().strftime("%Y_%m_%d-%H%M"),
+                                              monitor='val_accuracy',
+                                              mode='max',
+                                              verbose=1,
+                                              save_best_only=True,
+                                              save_weights_only=False)
+
     history = model.fit(X_train, y_train,
                 epochs=epochs,
                 batch_size=batch,
                 verbose=1,
                 validation_data=(X_valid,y_valid),
-                callbacks=[tensorboard,early_stopping])
+                callbacks=[tensorboard,early_stopping, checkpoint])
     
-    model.save( log_dir +'models/'+ datetime.datetime.now().strftime("%Y_%m_%d-%H%M"))
+
+    # model.save( log_dir +'models/'+ datetime.datetime.now().strftime("%Y_%m_%d-%H%M"))
 
     return history
-
