@@ -9,11 +9,14 @@ from sklearn.model_selection import train_test_split
 def data_loader(data_dir = "download_dataset/data", 
                 test_size = 0.2,
                 stratified=False,
-                raw=False):
+                raw=False,
+                test=False):
     
     data_directory = data_dir
-    
-    electrod_directory1 = "/eeg_fpz_cz"
+    if test:
+        electrod_directory1 = "/eeg_pz_oz" #test
+    else:
+        electrod_directory1 = "/eeg_fpz_cz" #training
     mypath1 = data_directory+electrod_directory1
     file_list1 = [f for f in listdir(mypath1) if isfile(join(mypath1, f))]
 
