@@ -1,0 +1,7 @@
+**/__pycache__
+.idea/
+.vscode/
+eeg_fpz_cz/
+eeg_pz_oz/
+**.edf
+**.npz

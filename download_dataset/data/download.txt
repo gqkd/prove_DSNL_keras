@@ -4,4 +4,7 @@ chmod +x download_physionet.sh
 ./download_physionet.sh
 
 python prepare_physionet.py --data_dir data --output_dir data/eeg_fpz_cz --select_ch 'EEG Fpz-Cz'
+
+or
+
 python prepare_physionet.py --data_dir data --output_dir data/eeg_pz_oz --select_ch 'EEG Pz-Oz'
