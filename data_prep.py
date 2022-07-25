@@ -190,6 +190,7 @@ def data_loader(data_dir = "download_dataset/data",
     if raw:
         data = (data_X_train, data_y_train, data_X_val, data_y_val, data_X_test, data_y_test)
         return data
+        
     if test:
         return X_test, y_test
     else:
