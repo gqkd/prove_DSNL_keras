@@ -2,6 +2,7 @@
 import os
 
 os.system("cd download_dataset/data")
+os.system("pwd")
 os.system("chmod +x download_physionet.sh")
 os.system("./download_physionet.sh")
 os.system("python prepare_physionet_original.py --data_dir data --output_dir data/eeg_fpz_cz --select_ch 'EEG Fpz-Cz'")
