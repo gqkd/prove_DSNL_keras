@@ -91,4 +91,35 @@ def trainer(X_train, X_valid, y_train, y_valid,
 
     return history
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
+    
+    from data_prep import data_loader
+    from train import trainer
+    import tensorflow as tf
+    import os
+    # confirm TensorFlow sees the GPU
+    from tensorflow.python.client import device_lib
+    assert 'GPU' in str(device_lib.list_local_devices())
+    if tf.test.gpu_device_name():
+        print('Default GPU Device: {}'.format(tf.test.gpu_device_name()))
+    else:
+        print("Please install GPU version of TF")
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    for gpu in gpus:
+        tf.config.experimental.set_memory_growth(gpu, True)
+
+    X_train, X_valid, y_train, y_valid = data_loader()
+
+    history = trainer(X_train, X_valid, y_train, y_valid,
+                  epochs=1,
+                  lr=9e-7, #9e-7
+                  batch=100,
+                  log_dir="/logs/base_fit/",
+                  patiente=200,
+                  weights=True
+                  # model=tf.keras.models.load_model('/content/drive/MyDrive/prove_DSNL_keras/logs/base_fit2/models/2022_07_18-0904') #0.72355 
+                  #  model=tf.keras.models.load_model('/content/drive/MyDrive/prove_DSNL_keras/logs/base_fit2/models/2022_07_18-1922') #0.72141
+                  )
+
+    
+    
