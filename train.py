@@ -10,7 +10,7 @@ def trainer(X_train, X_valid, y_train, y_valid,
             log_dir="/logs/base_fit/", 
             model = None,
             lr = 1e-4,
-            patiente=100,
+            patience=100,
             weights=False,
             ):
 
@@ -59,9 +59,9 @@ def trainer(X_train, X_valid, y_train, y_valid,
 
     early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy',
                                                   min_delta=0.0001, 
-                                                  patience=patiente,
+                                                  patience=patience,
                                                   verbose=1,
-                                                  mode='min')    
+                                                  mode='max')    
 
     checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath=log_dir +'models/'+ datetime.datetime.now().strftime("%Y_%m_%d-%H%M"),
                                               monitor='val_accuracy',
@@ -70,7 +70,7 @@ def trainer(X_train, X_valid, y_train, y_valid,
                                               save_best_only=True,
                                               save_weights_only=False)
     if weights:
-      print("inside if of weights")
+      print("Using weights")
       history = model.fit(X_train, y_train,
                   epochs=epochs,
                   batch_size=batch,
