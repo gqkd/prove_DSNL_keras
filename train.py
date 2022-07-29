@@ -11,7 +11,7 @@ def trainer(X_train, X_valid, y_train, y_valid,
             model = None,
             lr = 1e-4,
             patience=100,
-            weights=False,
+            weights=False
             ):
 
     num_classes = len(y_train[0])
