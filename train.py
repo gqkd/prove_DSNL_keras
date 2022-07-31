@@ -45,7 +45,7 @@ def trainer(X_train, X_valid, y_train, y_valid,
                            tfa.metrics.FBetaScore(num_classes=num_classes,average='macro')
                            ])
 
-    # keras.utils.plot_model(model, show_shapes=True)
+    tf.keras.utils.plot_model(model, show_shapes=True)
 
     log_directory = log_dir + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard = tf.keras.callbacks.TensorBoard(log_dir=log_directory,
@@ -69,6 +69,17 @@ def trainer(X_train, X_valid, y_train, y_valid,
                                               verbose=1,
                                               save_best_only=True,
                                               save_weights_only=False)
+
+    def schedule(epoch, lr):
+        decay = 0.0001
+        if epoch < 10:
+            return lr
+        else:
+            # return lr * tf.math.exp(-00.1)
+            return lr * 1/(1+decay*epoch)
+
+    scheduler = tf.keras.callbacks.LearningRateScheduler(schedule, verbose=1)
+
     if weights:
       print("Using weights")
       history = model.fit(X_train, y_train,
@@ -77,14 +88,14 @@ def trainer(X_train, X_valid, y_train, y_valid,
                   verbose=1,
                   sample_weight = train_weights, 
                   validation_data=(X_valid,y_valid),
-                  callbacks=[tensorboard,early_stopping, checkpoint])
+                  callbacks=[tensorboard, early_stopping, checkpoint,scheduler])
     else:
         history = model.fit(X_train, y_train,
                     epochs=epochs,
                     batch_size=batch,
                     verbose=1,
                     validation_data=(X_valid,y_valid),
-                    callbacks=[tensorboard,early_stopping, checkpoint])
+                    callbacks=[tensorboard, early_stopping, checkpoint, scheduler])
         
 
     # model.save( log_dir +'models/'+ datetime.datetime.now().strftime("%Y_%m_%d-%H%M"))

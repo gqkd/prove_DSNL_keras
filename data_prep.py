@@ -5,6 +5,7 @@ from sklearn.model_selection import StratifiedShuffleSplit
 import tensorflow as tf
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
+from tensorflow.keras.utils import to_categorical
 
 def data_loader(data_dir = "download_dataset/data",
                 electrods = 'fpz_cz',
@@ -103,12 +104,14 @@ def data_loader(data_dir = "download_dataset/data",
     X_train = X_seq_train[:,:,0] #to get rid of the useless last dimension
     y_seq_train_cen = [y_seq_train[i][1] for i in range(len(y_seq_train))]
 
-    temp_ = []
-    for i in range(len(y_seq_train_cen)):
-        temp = np.zeros((5,))
-        temp[y_seq_train_cen[i]] = 1.
-        temp_.append(temp)
-    y_train = np.asarray(temp_)
+    # temp_ = []
+    # for i in range(len(y_seq_train_cen)):
+    #     temp = np.zeros((5,))
+    #     temp[y_seq_train_cen[i]] = 1.
+    #     temp_.append(temp)
+    # y_train = np.asarray(temp_)
+    y_train = to_categorical(y_seq_train_cen)
+
 
     #validation
     X_seq_val, y_seq_val = [], []
@@ -122,12 +125,14 @@ def data_loader(data_dir = "download_dataset/data",
     X_val = X_seq_val[:,:,0] #to get rid of the useless last dimension
     y_seq_val_cen = [y_seq_val[i][1] for i in range(len(y_seq_val))]
 
-    temp_ = []
-    for i in range(len(y_seq_val_cen)):
-        temp = np.zeros((5,))
-        temp[y_seq_val_cen[i]] = 1.
-        temp_.append(temp)
-    y_val = np.asarray(temp_)
+    # temp_ = []
+    # for i in range(len(y_seq_val_cen)):
+    #     temp = np.zeros((5,))
+    #     temp[y_seq_val_cen[i]] = 1.
+    #     temp_.append(temp)
+    # y_val = np.asarray(temp_)
+    
+    y_val = to_categorical(y_seq_val_cen) 
     
     #test
     X_seq_test, y_seq_test = [], []
@@ -141,12 +146,14 @@ def data_loader(data_dir = "download_dataset/data",
     X_test = X_seq_test[:,:,0] #to get rid of the useless last dimension
     y_seq_test_cen = [y_seq_test[i][1] for i in range(len(y_seq_test))]
 
-    temp_ = []
-    for i in range(len(y_seq_test_cen)):
-        temp = np.zeros((5,))
-        temp[y_seq_test_cen[i]] = 1.
-        temp_.append(temp)
-    y_test = np.asarray(temp_)
+    # temp_ = []
+    # for i in range(len(y_seq_test_cen)):
+    #     temp = np.zeros((5,))
+    #     temp[y_seq_test_cen[i]] = 1.
+    #     temp_.append(temp)
+    # y_test = np.asarray(temp_)
+
+    y_test = to_categorical(y_seq_test_cen)
 
     # if test:
     #     #don't need to shuffle for the test
