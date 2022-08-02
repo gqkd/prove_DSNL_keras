@@ -76,7 +76,7 @@ def trainer(X_train, X_valid, y_train, y_valid,
         
         if epoch < 10:
             return lr
-        if epoch > round(epoch*0.8):
+        if epoch > round(epochs*0.8):
             return lr
         else:
             # return lr * tf.math.exp(-00.1)
