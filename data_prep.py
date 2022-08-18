@@ -204,4 +204,4 @@ def data_loader(data_dir = "download_dataset/data",
         return X_train, X_val, y_train, y_val
 
 # if __name__ == "__main__":
-#     data_loader()
+#     X_train, X_valid, y_train, y_valid = data_loader()

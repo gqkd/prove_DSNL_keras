@@ -12,8 +12,8 @@ def trainer(X_train, X_valid, y_train, y_valid,
             lr = 1e-4,
             patience=100,
             weights=False,
-            decay = 0.0001
-
+            decay = 0.0001,
+            sched = False
             ):
 
     num_classes = len(y_train[0])
@@ -63,9 +63,12 @@ def trainer(X_train, X_valid, y_train, y_valid,
                                                   min_delta=0.0001, 
                                                   patience=patience,
                                                   verbose=1,
-                                                  mode='max')    
+                                                  mode='max')
+    
+    #if .h5 string is deleted at the end it will save in .model format                                                  
+    save_weights_at = log_dir +'models/'+ datetime.datetime.now().strftime("%Y_%m_%d-%H%M")+'.h5'
 
-    checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath=log_dir +'models/'+ datetime.datetime.now().strftime("%Y_%m_%d-%H%M"),
+    checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath=save_weights_at,
                                               monitor='val_accuracy',
                                               mode='max',
                                               verbose=1,
@@ -84,8 +87,8 @@ def trainer(X_train, X_valid, y_train, y_valid,
 
     scheduler = tf.keras.callbacks.LearningRateScheduler(schedule, verbose=1)
 
-    if weights:
-      print("Using weights")
+    if weights and sched:
+      print("Using weights and scheduler")
       history = model.fit(X_train, y_train,
                   epochs=epochs,
                   batch_size=batch,
@@ -93,13 +96,31 @@ def trainer(X_train, X_valid, y_train, y_valid,
                   sample_weight = train_weights, 
                   validation_data=(X_valid,y_valid),
                   callbacks=[tensorboard, early_stopping, checkpoint,scheduler])
-    else:
+    elif weights and not sched:
+      print("Using weights")
+      history = model.fit(X_train, y_train,
+                  epochs=epochs,
+                  batch_size=batch,
+                  verbose=1,
+                  sample_weight = train_weights, 
+                  validation_data=(X_valid,y_valid),
+                  callbacks=[tensorboard, early_stopping, checkpoint])
+    elif not weights and sched:
+      print("Using scheduler")
+      history = model.fit(X_train, y_train,
+                  epochs=epochs,
+                  batch_size=batch,
+                  verbose=1,
+                  validation_data=(X_valid,y_valid),
+                  callbacks=[tensorboard, early_stopping, checkpoint,scheduler])
+    
+    elif not weights and not sched:
         history = model.fit(X_train, y_train,
                     epochs=epochs,
                     batch_size=batch,
                     verbose=1,
                     validation_data=(X_valid,y_valid),
-                    callbacks=[tensorboard, early_stopping, checkpoint, scheduler])
+                    callbacks=[tensorboard, early_stopping, checkpoint])
         
 
     # model.save( log_dir +'models/'+ datetime.datetime.now().strftime("%Y_%m_%d-%H%M"))
