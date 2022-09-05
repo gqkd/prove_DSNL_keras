@@ -1,3 +1,4 @@
+
 from os import listdir
 from os.path import isfile, join
 import numpy as np
@@ -6,6 +7,9 @@ import tensorflow as tf
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
+import random
+
+random.seed(42)
 
 def data_loader(data_dir = "download_dataset/data",
                 electrods = 'fpz_cz',
@@ -203,5 +207,95 @@ def data_loader(data_dir = "download_dataset/data",
     else:
         return X_train, X_val, y_train, y_val
 
+def data_aug(X, y):
+    y_temp = np.argmax(y, axis=1)
+    uni, counts = np.unique(y_temp, return_counts=True)
+    most_represented = np.argmax(counts)
+    elements_of_most_represented = counts[most_represented]
+    num_classes = len(uni)
+    X_ = []
+    y_ = []
+
+    for i in range(num_classes):
+        X1 = []
+        X2 = []
+        
+        if i==most_represented:
+            X_.append(X[y_temp==most_represented])
+            y_.append(y[y_temp==most_represented])
+        else:
+            X1.append(X[y_temp==i])
+            X1 = np.array(X1)
+            X1 = X1[0,:,:]
+            X2.append(X[y_temp==i]*-1)
+            X2 = np.array(X2)
+            X2 = X2[0,:,:]
+            
+            X3 = np.concatenate((X1,X2))
+
+            X_.append(random.choices(X3, k=elements_of_most_represented))
+
+            # X_.append(X3)
+            # X_.append(random.choices(X3, k=elements_of_most_represented-len(X3)))
+
+            y3 = [to_categorical(i,num_classes) for _ in range(elements_of_most_represented)]
+            y_.append(y3)
+
+    X_ = np.concatenate(X_)
+    y_ = np.array(y_)
+    y_ = np.concatenate(y_)
+    return X_, y_
+
+def data_augN1(X,y):
+    y_temp = np.argmax(y, axis=1)
+    uni, counts = np.unique(y_temp, return_counts=True)
+    less_represented = np.argmin(counts)
+    # elements_of_less_represented = counts[less_represented]
+    num_classes = len(uni)
+    X_ = []
+    y_ = []
+
+    for i in range(num_classes):
+        X1 = []
+        X2 = []
+        X21 = []
+        if i != less_represented:
+            X_.append(X[y_temp==i])
+            y_.append(y[y_temp==i])
+        else:
+            X1.append(X[y_temp==i])
+            X1 = np.array(X1)
+            X1 = X1[0,:,:]
+            
+            #flip vertically
+            X2.append(X[y_temp==i]*-1)
+            X2 = np.array(X2)
+            X2 = X2[0,:,:]
+            
+            #rotation backward
+            X21.append(X[y_temp==i][::-1])
+            X21 = np.array(X21)
+            X21 = X21[0,:,:]
+
+            X3 = np.concatenate((X1,X2,X21))
+
+            X_.append(X3)
+
+            # X_.append(X3)
+            # X_.append(random.choices(X3, k=elements_of_most_represented-len(X3)))
+
+            y3 = [to_categorical(i,num_classes) for _ in range(len(X3))]
+            y_.append(y3)
+    X_ = np.concatenate(X_)
+    y_ = np.array(y_)
+    y_ = np.concatenate(y_)
+    return X_, y_
+
+
 # if __name__ == "__main__":
 #     X_train, X_valid, y_train, y_valid = data_loader()
+
+#     print(type(y_train))
+# X_train, X_valid, y_train, y_valid = data_loader()
+# X_train, y_train = data_augN1(X_train, y_train)
+
