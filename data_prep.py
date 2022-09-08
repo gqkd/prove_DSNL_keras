@@ -30,11 +30,21 @@ def data_loader(data_dir = "download_dataset/data",
     patient_list = []
     for edf_name in file_list:
         patient_list.append(edf_name[3:5])
+    print(patient_list)
     unique_patients = np.unique(np.asarray(patient_list))
     num_pat = len(unique_patients)
+    print(f"patient number in the list {num_pat}\n")
+    print(f"unique patients\n{unique_patients}")
     num_pat_train = round(num_pat * split[0]/100)
     num_pat_val = round(num_pat * split[1]/100)
     num_pat_test = round(num_pat * split[2]/100)
+
+    print(f"numero pazienti train {num_pat_train}")
+    print(f"numero pazienti train {num_pat_val}")
+    print(f"numero pazienti train {num_pat_test}\n")
+
+    print(f"file list {file_list}")
+    file_list.sort()
 
     idx_train = []
     for j in range(num_pat_train):
@@ -53,7 +63,11 @@ def data_loader(data_dir = "download_dataset/data",
         idx = [i for i in range(len(file_list)) if file_list[i][3:5]==unique_patients[j]]
         for ind in idx:
             idx_test.append(ind)
-        
+    
+    print(f"patients in the training set {idx_train}")
+    print(f"patients in the validation set {idx_val}")
+    print(f"patients in the test set {idx_test}")
+
     data_X_train, data_y_train = [], []
     for ind in idx_train:
         with np.load(mypath1 + '/' + file_list[ind]) as npz:
@@ -293,9 +307,10 @@ def data_augN1(X,y):
 
 
 # if __name__ == "__main__":
-#     X_train, X_valid, y_train, y_valid = data_loader()
+# X_train, X_valid, y_train, y_valid = data_loader()
 
 #     print(type(y_train))
 # X_train, X_valid, y_train, y_valid = data_loader()
 # X_train, y_train = data_augN1(X_train, y_train)
+
 
