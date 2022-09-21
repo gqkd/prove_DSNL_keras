@@ -125,7 +125,7 @@ def trainer(X_train, X_valid, y_train, y_valid,
 
     # model.save( log_dir +'models/'+ datetime.datetime.now().strftime("%Y_%m_%d-%H%M"))
 
-    return history
+    return history, model
 
 # if __name__ == "__main__":
 #     pass

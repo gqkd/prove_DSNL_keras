@@ -92,3 +92,36 @@ wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4
 wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4231EJ-Hypnogram.edf --wait=20
 wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4232E0-PSG.edf --wait=20
 wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4232EV-Hypnogram.edf --wait=20
+
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4241E0-PSG.edf --wait=20
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4241EC-Hypnogram.edf --wait=20
+
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4242E0-PSG.edf --wait=20
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4242EA-Hypnogram.edf --wait=20
+
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4251E0-PSG.edf --wait=20
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4251EP-Hypnogram.edf --wait=20
+
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4252E0-PSG.edf --wait=20
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4252EU-Hypnogram.edf --wait=20
+
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4261F0-PSG.edf --wait=20
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4261FM-Hypnogram.edf --wait=20
+
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4262F0-PSG.edf --wait=20
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4262FC-Hypnogram.edf --wait=20
+
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4271F0-PSG.edf --wait=20
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4271FC-Hypnogram.edf --wait=20
+
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4272F0-PSG.edf --wait=20
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4272FM-Hypnogram.edf --wait=20
+
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4281G0-PSG.edf --wait=20
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4281GC-Hypnogram.edf --wait=20
+
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4282G0-PSG.edf --wait=20
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4282GC-Hypnogram.edf --wait=20
+
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4291G0-PSG.edf --wait=20
+wget https://www.physionet.org/physiobank/database/sleep-edfx/sleep-cassette/SC4291GA-Hypnogram.edf --wait=20
