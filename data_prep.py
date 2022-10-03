@@ -1,4 +1,3 @@
-
 from os import listdir
 from os.path import isfile, join
 import numpy as np
@@ -8,7 +7,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 import random
-
+from itertools import chain
 random.seed(42)
 
 class DataPrep():
@@ -33,7 +32,7 @@ class DataPrep():
         for edf_name in self.file_list:
             self.patient_list.append(edf_name[3:5])
         print(self.patient_list) #only the number of the patient
-
+        
         self.unique_patients = np.unique(np.asarray(self.patient_list))
 
         #to group the nights of the same patient
@@ -66,14 +65,25 @@ class DataPrep():
         #             y_seq.append(list(np.array(data_y[i][j:j+seq_length])))
 
         #in this way is like [ep1,ep2,ep3],[ep2,ep3,ep4], ...
-        for i in range(len(data_X)):
-            for j in range(len(data_X[i])): # discard last short sequence
-                if j+seq_length < len(data_X[i]):
-                    X_seq.append(np.concatenate(data_X[i][j:j+seq_length]))
-                    y_seq.append(list(np.array(data_y[i][j:j+seq_length])))
+        # for i in range(len(data_X)):
+        #     for j in range(len(data_X[i])): # discard last short sequence
+        #         if j+seq_length < len(data_X[i]):
+        #             X_seq.append(np.concatenate(data_X[i][j:j+seq_length]))
+        #             y_seq.append(list(np.array(data_y[i][j:j+seq_length])))
+        X_seq, y_seq = [], []
+        seq_length=3
+        for k in range(len(data_X)):
+
+          for i in range(len(data_X[k])):
+            if i+seq_length < len(data_X[k]):
+              tmp90sec=[]
+              for j in range(seq_length):
+                seq30sec = list(chain.from_iterable(data_X[k][i+j]))
+                tmp90sec.append(seq30sec)
+              X_seq.append(np.concatenate(tmp90sec))
+              y_seq.append(list(data_y[k][i:i+seq_length]))
 
         X_seq = np.array(X_seq)
-        X_seq = X_seq[:,:,0] #to get rid of the useless last dimension
         y_seq_cen = [y_seq[i][1] for i in range(len(y_seq))]
 
         # temp_ = []
@@ -82,7 +92,7 @@ class DataPrep():
         #     temp[y_seq_train_cen[i]] = 1.
         #     temp_.append(temp)
         # y_train = np.asarray(temp_)
-        y_seq = to_categorical(y_seq_cen)
+        y_seq = to_categorical(y_seq_cen,num_classes=len(np.unique(y_seq_cen)))
 
         return X_seq, y_seq        
 
@@ -315,7 +325,7 @@ class DataPrep():
         X_ = np.concatenate(X_)
         y_ = np.array(y_)
         y_ = np.concatenate(y_)
-        y_ = to_categorical(y_)
+        # y_ = to_categorical(y_)
         return X_, y_
 
     def data_augN1(self, X,y):
@@ -382,9 +392,25 @@ class DataPrep():
             idx = seq_idx[i]
             X_seq_train.append(X[idx])
             y_seq_train.append(y[idx])
-        
+
+        for i in range(num_train, num_train+num_valid):
+            idx = seq_idx[i]
+            X_seq_valid.append(X[idx])
+            y_seq_valid.append(y[idx])
+
+        for i in range(num_train+num_valid, len(seq_idx)):
+            idx = seq_idx[i]
+            X_seq_test.append(X[idx])
+            y_seq_test.append(y[idx])        
+
         X_seq_train = np.array(X_seq_train)
         y_seq_train = np.array(y_seq_train)
+
+        X_seq_valid = np.array(X_seq_valid)
+        y_seq_valid = np.array(y_seq_valid)
+
+        X_seq_test = np.array(X_seq_test)
+        y_seq_test = np.array(y_seq_test)
 
         X_train, y_train = [], []
 
@@ -394,16 +420,6 @@ class DataPrep():
                 temp.append(X_seq_train[i][j])
             X_train.append(temp)
             y_train.append(y_seq_train[i])
-        
-        del X_seq_train, y_seq_train
-
-        for i in range(num_train, num_train+num_valid):
-            idx = seq_idx[i]
-            X_seq_valid.append(X[idx])
-            y_seq_valid.append(y[idx])
-        
-        X_seq_valid = np.array(X_seq_valid)
-        y_seq_valid = np.array(y_seq_valid)
 
         X_valid, y_valid = [], []
 
@@ -414,17 +430,6 @@ class DataPrep():
             X_valid.append(temp)
             y_valid.append(y_seq_valid[i])
 
-        del X_seq_valid, y_seq_valid
-
-        for i in range(num_train+num_valid, len(seq_idx)):
-            idx = seq_idx[i]
-            X_seq_test.append(X[idx])
-            y_seq_test.append(y[idx])        
-
-
-        X_seq_test = np.array(X_seq_test)
-        y_seq_test = np.array(y_seq_test)
-
         X_test, y_test = [], []
 
         for i in range(len(X_seq_test)):
@@ -434,8 +439,6 @@ class DataPrep():
             X_test.append(temp)
             y_test.append(y_seq_test[i])
 
-        del X_seq_test, y_seq_test
-        
         X_train = np.array(X_train)
         y_train = np.array(y_train)
         X_valid = np.array(X_valid)
@@ -444,7 +447,32 @@ class DataPrep():
         y_test = np.array(y_test)
 
         return X_train, y_train, X_valid, y_valid, X_test, y_test
+        
+    def kfold_idx(self, X, k, kth, split=(80,10,10)):
+        seq_idx = [i for i in range(len(X))]
+        random.shuffle(seq_idx)
 
+        n = int(len(seq_idx)*1/k*kth)
+        seq_idx = seq_idx[-n:] + seq_idx[:-n]
+
+        num_train = int(len(X)*split[0]/100)
+        num_valid = int(len(X)*split[1]/100)+1
+        num_test = int(len(X)*split[2]/100)+1 #no need
+
+        idx_train = []
+        idx_valid = []
+        idx_test = []
+
+        for i in range(0, num_train):
+            idx_train.append(seq_idx[i])
+        
+        for i in range(num_train, num_train+num_valid):
+            idx_valid.append(seq_idx[i])
+        
+        for i in range(num_train+num_valid, len(seq_idx)):
+            idx_test.append(seq_idx[i])
+     
+        return idx_train, idx_valid, idx_test
 
 
 if __name__ == "__main__":
@@ -455,7 +483,5 @@ if __name__ == "__main__":
     #     print(type(y_train))
     # X_train, X_valid, y_train, y_valid = data_loader()
     # X_train, y_train = data_augN1(X_train, y_train)
-
-
 
 
