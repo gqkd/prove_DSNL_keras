@@ -45,7 +45,7 @@ class DataPrep():
             self.group_patient_list.append(temp)
         self.file_list.sort()
 
-    def get_seq(self):
+    def get_seq(self,seq_length=3):
         data_X, data_y = [], []
         for ind in range(len(self.file_list)):
             with np.load(self.mypath1 + '/' + self.file_list[ind]) as npz:
@@ -53,7 +53,7 @@ class DataPrep():
                 data_y.append(npz['y'])
 
         # make sequence data, must be odd
-        seq_length = 3 
+        # seq_length = 3 
         #training
         X_seq, y_seq = [], []
 
@@ -65,26 +65,27 @@ class DataPrep():
         #             y_seq.append(list(np.array(data_y[i][j:j+seq_length])))
 
         #in this way is like [ep1,ep2,ep3],[ep2,ep3,ep4], ...
-        # for i in range(len(data_X)):
-        #     for j in range(len(data_X[i])): # discard last short sequence
-        #         if j+seq_length < len(data_X[i]):
-        #             X_seq.append(np.concatenate(data_X[i][j:j+seq_length]))
-        #             y_seq.append(list(np.array(data_y[i][j:j+seq_length])))
-        X_seq, y_seq = [], []
-        seq_length=3
-        for k in range(len(data_X)):
+        for i in range(len(data_X)):
+            for j in range(len(data_X[i])): # discard last short sequence
+                if j+seq_length < len(data_X[i]):
+                    X_seq.append(np.concatenate(data_X[i][j:j+seq_length]))
+                    y_seq.append(list(np.array(data_y[i][j:j+seq_length])))
 
-          for i in range(len(data_X[k])):
-            if i+seq_length < len(data_X[k]):
-              tmp90sec=[]
-              for j in range(seq_length):
-                seq30sec = list(chain.from_iterable(data_X[k][i+j]))
-                tmp90sec.append(seq30sec)
-              X_seq.append(np.concatenate(tmp90sec))
-              y_seq.append(list(data_y[k][i:i+seq_length]))
+        # for k in range(len(data_X)):
+        #   for i in range(len(data_X[k])):
+        #     if i+seq_length < len(data_X[k]):
+        #       tmp90sec=[]
+        #       for j in range(seq_length):
+        #         seq30sec = list(chain.from_iterable(data_X[k][i+j]))
+        #         tmp90sec.append(seq30sec)
+        #       X_seq.append(np.concatenate(tmp90sec))
+        #       y_seq.append(list(data_y[k][i:i+seq_length]))
 
         X_seq = np.array(X_seq)
-        y_seq_cen = [y_seq[i][1] for i in range(len(y_seq))]
+        X_seq = X_seq[:,:,0]
+        central_index = round(seq_length/2)-1
+        print(central_index)
+        y_seq_cen = [y_seq[i][central_index] for i in range(len(y_seq))]
 
         # temp_ = []
         # for i in range(len(y_seq_train_cen)):
@@ -287,6 +288,32 @@ class DataPrep():
             return X_test, y_test
         else:
             return X_train, X_val, y_train, y_val
+    
+    def data_down(self, X, y_1HE): #y 1 hot encoded
+        y = np.argmax(y_1HE, axis=1)
+        uni, counts = np.unique(y, return_counts=True)
+        less_represented = np.argmin(counts)
+        elements_of_less_represented = counts[less_represented]
+        num_classes = len(uni)        
+        X_ = []
+        y_ = []
+        for i in range(num_classes):
+            X_temp=[]
+            y_temp=[]
+            if i==less_represented:
+                X_.append(X[y==less_represented])
+                y_.append(y_1HE[y==less_represented])
+            else:
+                X_temp = X[y==i]
+                X_.append(random.choices(X_temp, k=elements_of_less_represented))
+                y_temp = [to_categorical(i,num_classes) for _ in range(elements_of_less_represented)]
+                y_.append(y_temp)
+        X_ = np.concatenate(X_)
+        y_ = np.array(y_)
+        y_ = np.concatenate(y_)
+
+        return X_, y_
+
 
     def data_aug(self, X, y):
         y_temp = np.argmax(y, axis=1)
