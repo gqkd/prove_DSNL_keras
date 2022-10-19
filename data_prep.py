@@ -335,13 +335,14 @@ class DataPrep():
                 X1.append(X[y_temp==i])
                 X1 = np.array(X1)
                 X1 = X1[0,:,:]
-                X2.append(X[y_temp==i]*-1)
+                X2.append(X[y_temp==i]*-1) #flipped vertically
                 X2 = np.array(X2)
                 X2 = X2[0,:,:]
                 
                 X3 = np.concatenate((X1,X2))
+                X_.append(X1) #in this way takes the observations and after inserting the original does the random sampling
 
-                X_.append(random.choices(X3, k=elements_of_most_represented))
+                X_.append(random.choices(X3, k=elements_of_most_represented-len(X1)))
 
                 # X_.append(X3)
                 # X_.append(random.choices(X3, k=elements_of_most_represented-len(X3)))
