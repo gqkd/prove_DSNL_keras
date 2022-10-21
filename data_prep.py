@@ -13,8 +13,9 @@ random.seed(42)
 class DataPrep():
     def __init__(self) -> None:
         pass
-
+    
     #takes files from directory e group them in patients
+    
     def data_loader(self,
                     data_dir = "download_dataset/data",
                     electrods = 'fpz_cz'):
@@ -31,10 +32,10 @@ class DataPrep():
         self.patient_list = []
         for edf_name in self.file_list:
             self.patient_list.append(edf_name[3:5])
-        print(self.patient_list) #only the number of the patient
+        # print(self.patient_list) #only the number of the patient
         
         self.unique_patients = np.unique(np.asarray(self.patient_list))
-
+        print(self.unique_patients)
         #to group the nights of the same patient
         self.group_patient_list = []
         for i in range(len(self.unique_patients)):
@@ -44,11 +45,15 @@ class DataPrep():
                     temp.append(self.file_list[j])
             self.group_patient_list.append(temp)
         self.file_list.sort()
+        return self.file_list, self.unique_patients
 
-    def get_seq(self,seq_length=3):
+    def get_seq(self,file_list, seq_length=3):
+        if file_list==None:
+            file_list = self.file_list
+        
         data_X, data_y = [], []
-        for ind in range(len(self.file_list)):
-            with np.load(self.mypath1 + '/' + self.file_list[ind]) as npz:
+        for ind in range(len(file_list)):
+            with np.load(self.mypath1 + '/' + file_list[ind]) as npz:
                 data_X.append(npz['x'])
                 data_y.append(npz['y'])
 
